@@ -1,0 +1,51 @@
+<div class="card" style="transition:border-color 0.18s, transform 0.18s;"
+     onmouseenter="this.style.transform='translateY(-1px)'"
+     onmouseleave="this.style.transform=''">
+
+  <!-- Skeleton -->
+  <ng-container *ngIf="loading">
+    <div class="flex items-start justify-between mb-5">
+      <div class="skel h-3 w-28 rounded"></div>
+      <div class="skel w-9 h-9 rounded-lg"></div>
+    </div>
+    <div class="skel h-8 w-24 rounded mb-2.5"></div>
+    <div class="skel h-3 w-32 rounded"></div>
+  </ng-container>
+
+  <!-- Data -->
+  <ng-container *ngIf="!loading && stat">
+    <div class="flex items-start justify-between mb-5">
+      <span class="text-[11px] font-semibold uppercase tracking-widest" style="color:#6b3318; letter-spacing:0.09em;">
+        {{ stat.titolo }}
+      </span>
+      <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
+           [style.background]="getIconBg(stat.colore)"
+           [style.borderColor]="getIconBdr(stat.colore)"
+           style="border-width:1px; border-style:solid;">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+             [style.color]="getIconText(stat.colore)">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" [attr.d]="getIconPath(stat.icona)"/>
+        </svg>
+      </div>
+    </div>
+
+    <div class="text-[28px] font-bold tabular mb-2.5" style="color:#402516; letter-spacing:-0.03em;">
+      {{ stat.valore }}
+    </div>
+
+    <div class="flex items-center gap-2">
+      <span class="inline-flex items-center gap-0.5 text-[11px] font-semibold px-1.5 py-0.5 rounded"
+            [style.background]="variazionePositiva ? 'rgba(11,122,79,0.08)' : 'rgba(194,31,31,0.07)'"
+            [style.color]="variazionePositiva ? '#0b7a4f' : '#c21f1f'"
+            [style.borderColor]="variazionePositiva ? 'rgba(11,122,79,0.2)' : 'rgba(194,31,31,0.18)'"
+            style="border-width:1px; border-style:solid;">
+        <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                [attr.d]="variazionePositiva ? 'M5 10l7-7 7 7' : 'M19 14l-7 7-7-7'"/>
+        </svg>
+        {{ variazioneAssoluta }}%
+      </span>
+      <span class="text-[11px]" style="color:rgba(64,37,22,0.28);">vs mese scorso</span>
+    </div>
+  </ng-container>
+</div>

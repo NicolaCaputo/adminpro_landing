@@ -1,0 +1,231 @@
+<div class="p-6 animate-fade-in dot-grid min-h-full">
+  <div class="max-w-4xl mx-auto">
+
+    <!-- Success banner -->
+    <div *ngIf="salvatoSuccesso"
+         class="mb-4 flex items-center gap-3 p-3 rounded-xl"
+         style="background:rgba(11,122,79,0.07); border:1px solid rgba(11,122,79,0.2);">
+      <svg class="w-4 h-4 flex-shrink-0" style="color:#0b7a4f;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+      </svg>
+      <p class="text-[13px] font-medium" style="color:#0b7a4f;">Impostazioni salvate con successo!</p>
+    </div>
+
+    <div class="flex flex-col sm:flex-row gap-5">
+
+      <!-- Sidebar nav -->
+      <div class="w-full sm:w-44 flex-shrink-0">
+        <div class="card p-1.5 space-y-0.5">
+          <button *ngFor="let s of sezioni" (click)="sezioneAttiva = s.id"
+                  class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-[13px] font-medium transition-all"
+                  [style.background]="sezioneAttiva === s.id ? 'rgba(5,84,242,0.08)' : ''"
+                  [style.color]="sezioneAttiva === s.id ? '#0554F2' : '#402516'"
+                  [style.borderColor]="sezioneAttiva === s.id ? 'rgba(5,84,242,0.2)' : 'transparent'"
+                  style="border-width:1px; border-style:solid;">
+            <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" [attr.d]="getIconPath(s.icona)"/>
+            </svg>
+            {{ s.label }}
+          </button>
+        </div>
+      </div>
+
+      <!-- Content -->
+      <div class="flex-1">
+
+        <!-- Profilo -->
+        <div *ngIf="sezioneAttiva === 'profilo'" class="card space-y-5">
+          <div>
+            <h3 class="text-[14px] font-semibold" style="color:#402516;">Informazioni Profilo</h3>
+            <p class="text-[11px] mt-0.5" style="color:#6b3318;">Aggiorna le informazioni del tuo account</p>
+          </div>
+
+          <div class="flex items-center gap-4 p-4 rounded-xl"
+               style="background:rgba(64,37,22,0.03); border:1px solid rgba(64,37,22,0.07);">
+            <div class="w-14 h-14 rounded-full flex items-center justify-center text-base font-bold"
+                 style="background:rgba(5,84,242,0.1); color:#0554F2; border:1px solid rgba(5,84,242,0.2);">NC</div>
+            <div>
+              <p class="text-[13px] font-medium" style="color:#402516;">Foto Profilo</p>
+              <p class="text-[11px] mb-2" style="color:#6b3318;">JPG, PNG. Massimo 2MB.</p>
+              <button class="btn-secondary text-xs">Carica immagine</button>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-[11px] font-medium mb-1.5 uppercase tracking-wider" style="color:#7c3d1a;">Nome</label>
+              <input type="text" [(ngModel)]="profilo.nome" class="input-field">
+            </div>
+            <div>
+              <label class="block text-[11px] font-medium mb-1.5 uppercase tracking-wider" style="color:#7c3d1a;">Cognome</label>
+              <input type="text" [(ngModel)]="profilo.cognome" class="input-field">
+            </div>
+            <div class="sm:col-span-2">
+              <label class="block text-[11px] font-medium mb-1.5 uppercase tracking-wider" style="color:#7c3d1a;">Email</label>
+              <input type="email" [(ngModel)]="profilo.email" class="input-field">
+            </div>
+            <div>
+              <label class="block text-[11px] font-medium mb-1.5 uppercase tracking-wider" style="color:#7c3d1a;">Ruolo</label>
+              <input type="text" [(ngModel)]="profilo.ruolo" class="input-field" readonly
+                     style="opacity:0.5; cursor:not-allowed;">
+            </div>
+            <div>
+              <label class="block text-[11px] font-medium mb-1.5 uppercase tracking-wider" style="color:#7c3d1a;">Dipartimento</label>
+              <input type="text" [(ngModel)]="profilo.dipartimento" class="input-field">
+            </div>
+            <div>
+              <label class="block text-[11px] font-medium mb-1.5 uppercase tracking-wider" style="color:#7c3d1a;">Lingua</label>
+              <select [(ngModel)]="profilo.lingua" class="input-field">
+                <option>Italiano</option><option>English</option><option>Español</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-[11px] font-medium mb-1.5 uppercase tracking-wider" style="color:#7c3d1a;">Fuso Orario</label>
+              <select [(ngModel)]="profilo.fuso" class="input-field">
+                <option value="Europe/Rome">Europe/Rome (UTC+2)</option>
+                <option value="Europe/London">Europe/London (UTC+1)</option>
+                <option value="UTC">UTC</option>
+              </select>
+            </div>
+          </div>
+          <div class="flex justify-end pt-1">
+            <button (click)="salva()" class="btn-primary">Salva modifiche</button>
+          </div>
+        </div>
+
+        <!-- Sicurezza -->
+        <div *ngIf="sezioneAttiva === 'sicurezza'" class="space-y-4">
+          <div class="card space-y-4">
+            <div>
+              <h3 class="text-[14px] font-semibold" style="color:#402516;">Cambia Password</h3>
+              <p class="text-[11px] mt-0.5" style="color:#6b3318;">Usa una password sicura di almeno 8 caratteri</p>
+            </div>
+            <div class="space-y-3">
+              <div>
+                <label class="block text-[11px] font-medium mb-1.5 uppercase tracking-wider" style="color:#7c3d1a;">Password attuale</label>
+                <input type="password" placeholder="••••••••" class="input-field">
+              </div>
+              <div>
+                <label class="block text-[11px] font-medium mb-1.5 uppercase tracking-wider" style="color:#7c3d1a;">Nuova password</label>
+                <input type="password" placeholder="••••••••" class="input-field">
+              </div>
+              <div>
+                <label class="block text-[11px] font-medium mb-1.5 uppercase tracking-wider" style="color:#7c3d1a;">Conferma password</label>
+                <input type="password" placeholder="••••••••" class="input-field">
+              </div>
+            </div>
+            <div class="flex justify-end">
+              <button (click)="salva()" class="btn-primary">Aggiorna password</button>
+            </div>
+          </div>
+          <div class="card">
+            <div class="flex items-start justify-between">
+              <div>
+                <h3 class="text-[14px] font-semibold" style="color:#402516;">Autenticazione a Due Fattori</h3>
+                <p class="text-[11px] mt-0.5" style="color:#6b3318;">Proteggi l'account con un secondo livello</p>
+              </div>
+              <div class="toggle-track on" style="cursor:pointer;">
+                <div class="toggle-thumb on"></div>
+              </div>
+            </div>
+            <div class="mt-3 flex items-center gap-2 p-3 rounded-lg"
+                 style="background:rgba(11,122,79,0.07); border:1px solid rgba(11,122,79,0.15);">
+              <svg class="w-4 h-4 flex-shrink-0" style="color:#0b7a4f;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+              </svg>
+              <p class="text-[12px] font-medium" style="color:#0b7a4f;">2FA attivato — Account protetto</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Notifiche -->
+        <div *ngIf="sezioneAttiva === 'notifiche'" class="card space-y-5">
+          <div>
+            <h3 class="text-[14px] font-semibold" style="color:#402516;">Preferenze Notifiche</h3>
+            <p class="text-[11px] mt-0.5" style="color:#6b3318;">Scegli come vuoi ricevere gli aggiornamenti</p>
+          </div>
+          <div>
+            <p class="text-[10px] font-semibold uppercase tracking-widest mb-3" style="color:#6b3318;">Email e Sistema</p>
+            <div class="space-y-3">
+              <div *ngFor="let item of notificheItems"
+                   class="flex items-center justify-between py-2.5"
+                   style="border-bottom:1px solid rgba(64,37,22,0.06);">
+                <div>
+                  <p class="text-[13px] font-medium" style="color:#402516;">{{ item.label }}</p>
+                  <p class="text-[11px]" style="color:#6b3318;">{{ item.desc }}</p>
+                </div>
+                <div class="toggle-track" [ngClass]="getNotificaValore(item.key) ? 'on' : ''"
+                     (click)="toggleNotifica(item.key)" style="cursor:pointer; flex-shrink:0;">
+                  <div class="toggle-thumb" [ngClass]="getNotificaValore(item.key) ? 'on' : ''"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="flex justify-end">
+            <button (click)="salva()" class="btn-primary">Salva preferenze</button>
+          </div>
+        </div>
+
+        <!-- Sistema -->
+        <div *ngIf="sezioneAttiva === 'sistema'" class="card space-y-5">
+          <div>
+            <h3 class="text-[14px] font-semibold" style="color:#402516;">Preferenze di Sistema</h3>
+            <p class="text-[11px] mt-0.5" style="color:#6b3318;">Personalizza aspetto e comportamento</p>
+          </div>
+          <div class="space-y-4">
+            <div>
+              <label class="block text-[11px] font-medium mb-2 uppercase tracking-wider" style="color:#7c3d1a;">Tema</label>
+              <div class="flex gap-2">
+                <button *ngFor="let t of [{id:'scuro', label:'Scuro'}, {id:'chiaro', label:'Chiaro'}, {id:'sistema', label:'Sistema'}]"
+                        (click)="sistema.tema = t.id"
+                        class="flex-1 py-2 text-[13px] rounded-lg transition-all"
+                        [style.background]="sistema.tema === t.id ? 'rgba(5,84,242,0.08)' : 'rgba(64,37,22,0.03)'"
+                        [style.color]="sistema.tema === t.id ? '#0554F2' : 'rgba(64,37,22,0.52)'"
+                        [style.borderColor]="sistema.tema === t.id ? 'rgba(5,84,242,0.25)' : 'rgba(64,37,22,0.08)'"
+                        [style.fontWeight]="sistema.tema === t.id ? '600' : '400'"
+                        style="border-width:1px; border-style:solid;">
+                  {{ t.label }}
+                </button>
+              </div>
+            </div>
+            <div>
+              <label class="block text-[11px] font-medium mb-1.5 uppercase tracking-wider" style="color:#7c3d1a;">Compattezza</label>
+              <select [(ngModel)]="sistema.compattezza" class="input-field">
+                <option value="compatta">Compatta</option>
+                <option value="normale">Normale</option>
+                <option value="spaziosa">Spaziosa</option>
+              </select>
+            </div>
+            <div class="flex items-center justify-between py-2.5"
+                 style="border-top:1px solid rgba(64,37,22,0.07);">
+              <div>
+                <p class="text-[13px] font-medium" style="color:#402516;">Animazioni interfaccia</p>
+                <p class="text-[11px]" style="color:#6b3318;">Abilita le transizioni animate</p>
+              </div>
+              <div class="toggle-track" [ngClass]="sistema.animazioni ? 'on' : ''"
+                   (click)="sistema.animazioni = !sistema.animazioni" style="cursor:pointer; flex-shrink:0;">
+                <div class="toggle-thumb" [ngClass]="sistema.animazioni ? 'on' : ''"></div>
+              </div>
+            </div>
+            <div class="p-4 rounded-xl"
+                 style="background:rgba(194,31,31,0.05); border:1px solid rgba(194,31,31,0.12);">
+              <p class="text-[12px] font-semibold mb-1" style="color:#c21f1f;">Zona Pericolosa</p>
+              <p class="text-[11px] mb-3" style="color:rgba(64,37,22,0.52);">L'eliminazione dell'account è irreversibile.</p>
+              <button class="text-[12px] font-medium px-3 py-1.5 rounded-lg transition-all"
+                      style="color:#c21f1f; border:1px solid rgba(194,31,31,0.2);"
+                      onmouseenter="this.style.background='rgba(194,31,31,0.08)'"
+                      onmouseleave="this.style.background=''">
+                Elimina account
+              </button>
+            </div>
+          </div>
+          <div class="flex justify-end">
+            <button (click)="salva()" class="btn-primary">Salva impostazioni</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>

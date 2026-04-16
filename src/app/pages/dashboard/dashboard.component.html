@@ -1,0 +1,190 @@
+<div class="p-6 space-y-5 animate-fade-in dot-grid min-h-full">
+
+  <!-- Stat Cards -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+    <ng-container *ngIf="loadingStats">
+      <div *ngFor="let i of [1,2,3,4]" class="card">
+        <div class="flex items-start justify-between mb-5">
+          <div class="skel h-3 w-28 rounded"></div>
+          <div class="skel w-9 h-9 rounded-xl"></div>
+        </div>
+        <div class="skel h-8 w-24 rounded mb-2.5"></div>
+        <div class="skel h-3 w-32 rounded"></div>
+      </div>
+    </ng-container>
+    <app-stat-card *ngFor="let stat of statCards" [stat]="stat"></app-stat-card>
+  </div>
+
+  <!-- 3D + Bar Chart -->
+  <div class="grid grid-cols-1 xl:grid-cols-5 gap-4">
+    <div class="xl:col-span-2">
+      <div class="card p-4 h-full flex flex-col">
+        <div class="flex items-center justify-between mb-3">
+          <div>
+            <h3 class="text-[13.5px] font-semibold" style="color:#402516;">Analisi 3D</h3>
+            <p class="text-[11px] mt-0.5" style="color:#6b3318;">Distribuzione in tempo reale</p>
+          </div>
+          <span class="badge-blue text-[10px] uppercase tracking-wider">Live</span>
+        </div>
+        <app-threejs-widget></app-threejs-widget>
+      </div>
+    </div>
+
+    <div class="xl:col-span-3">
+      <div class="card h-full flex flex-col">
+        <div class="flex items-center justify-between mb-6">
+          <div>
+            <h3 class="text-[13.5px] font-semibold" style="color:#402516;">Ricavi Mensili</h3>
+            <p class="text-[11px] mt-0.5" style="color:#6b3318;">Performance nell'anno corrente</p>
+          </div>
+          <span class="text-[11px] font-semibold px-2.5 py-1 rounded-lg tabular"
+                style="background:rgba(64,37,22,0.05); color:rgba(64,37,22,0.4); border:1px solid rgba(64,37,22,0.1);">2026</span>
+        </div>
+        <ng-container *ngIf="loadingGrafico">
+          <div class="flex items-end gap-1.5 h-28 mt-auto">
+            <div *ngFor="let i of [1,2,3,4,5,6,7,8,9,10,11,12]"
+                 class="flex-1 skel rounded-sm" [style.height.%]="35+(i*5%50)"></div>
+          </div>
+        </ng-container>
+        <ng-container *ngIf="!loadingGrafico">
+          <div class="flex items-end gap-1.5 h-28 mt-auto">
+            <div *ngFor="let punto of graficoDati; let i = index"
+                 class="flex-1 flex flex-col items-center gap-1 group cursor-pointer">
+              <div class="relative w-full rounded-sm transition-all duration-200"
+                   [style.height.%]="altezzaBarra(punto.valore)"
+                   [style.background]="i===3 ? 'linear-gradient(to top,#0540F2,#056CF2)' : 'rgba(5,84,242,0.12)'"
+                   [style.borderColor]="i===3 ? 'rgba(5,84,242,0.5)' : 'rgba(5,84,242,0.18)'"
+                   style="border-width:1px; border-style:solid; min-height:4px;"
+                   onmouseenter="this.style.filter='brightness(1.15)'"
+                   onmouseleave="this.style.filter=''">
+                <div class="absolute -top-8 left-1/2 -translate-x-1/2 text-[11px] font-medium px-2 py-1 rounded
+                            whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10 tabular"
+                     style="background:#402516; color:#F2F2F2; border-radius:6px;">
+                  €{{ punto.valore.toLocaleString('it-IT') }}
+                </div>
+              </div>
+              <span class="text-[10px]" style="color:#6b3318;">{{ punto.etichetta }}</span>
+            </div>
+          </div>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tasks + Feed -->
+  <div class="grid grid-cols-1 xl:grid-cols-3 gap-4">
+    <div class="xl:col-span-2 card">
+      <div class="flex items-center justify-between mb-4">
+        <div>
+          <h3 class="text-[13.5px] font-semibold" style="color:#402516;">Attività in Corso</h3>
+          <p class="text-[11px] mt-0.5" style="color:#6b3318;">Attività attive in questo momento</p>
+        </div>
+        <a routerLink="/attivita" class="text-[12px] font-semibold cursor-pointer transition-colors"
+           style="color:#0554F2;"
+           onmouseenter="this.style.color='#0540F2'"
+           onmouseleave="this.style.color='#0554F2'">Vedi tutte →</a>
+      </div>
+
+      <ng-container *ngIf="loadingTasks">
+        <div *ngFor="let i of [1,2,3]" class="flex items-center gap-3 py-3"
+             style="border-bottom:1px solid rgba(64,37,22,0.06);">
+          <div class="skel w-7 h-7 rounded-full"></div>
+          <div class="flex-1"><div class="skel h-3 w-44 rounded mb-2"></div><div class="skel h-2.5 w-28 rounded"></div></div>
+          <div class="skel h-4 w-14 rounded"></div>
+        </div>
+      </ng-container>
+
+      <div *ngFor="let task of attivitaInCorso; let i = index"
+           class="flex items-start gap-3 py-3 group"
+           style="border-bottom:1px solid rgba(64,37,22,0.06);">
+        <div class="w-7 h-7 rounded-full text-[10px] font-bold flex items-center justify-center flex-shrink-0"
+             [style.background]="getAvatarBg(i)"
+             [style.color]="getAvatarText(i)"
+             [style.borderColor]="getAvatarBdr(i)"
+             style="border-width:1px; border-style:solid;">
+          {{ task.assegnatoAvatar }}
+        </div>
+        <div class="flex-1 min-w-0">
+          <div class="flex items-start justify-between gap-2">
+            <p class="text-[13px] font-medium truncate" style="color:#402516;">{{ task.titolo }}</p>
+            <span [ngClass]="getPrioritaClass(task.priorita)" class="flex-shrink-0 text-[10px]">{{ task.priorita }}</span>
+          </div>
+          <div class="flex items-center gap-2 mt-0.5">
+            <span class="text-[11px]" style="color:#6b3318;">{{ task.assegnatoA }}</span>
+            <span style="color:rgba(64,37,22,0.2);">·</span>
+            <span class="text-[11px]" style="color:#6b3318;">Scade {{ task.scadenza | date:'dd MMM' }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="xl:col-span-1 card">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-[13.5px] font-semibold" style="color:#402516;">Feed</h3>
+        <span class="w-1.5 h-1.5 rounded-full animate-pulse" style="background:#0b7a4f;"></span>
+      </div>
+
+      <ng-container *ngIf="loadingAttivita">
+        <div *ngFor="let i of [1,2,3,4]" class="flex gap-3 py-2.5"
+             style="border-bottom:1px solid rgba(64,37,22,0.06);">
+          <div class="skel w-7 h-7 rounded-lg flex-shrink-0"></div>
+          <div class="flex-1"><div class="skel h-3 w-full rounded mb-1.5"></div><div class="skel h-2 w-14 rounded"></div></div>
+        </div>
+      </ng-container>
+
+      <div *ngFor="let att of attivitaRecenti"
+           class="flex items-start gap-3 py-2.5"
+           style="border-bottom:1px solid rgba(64,37,22,0.06);">
+        <div class="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0"
+             style="background:rgba(5,84,242,0.08); border:1px solid rgba(5,84,242,0.15);">
+          <svg class="w-3 h-3" style="color:#0554F2;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" [attr.d]="getIconAttivita(att.icona)"/>
+          </svg>
+        </div>
+        <div class="flex-1 min-w-0">
+          <p class="text-[12px] leading-snug" style="color:rgba(64,37,22,0.52);">{{ att.messaggio }}</p>
+          <p class="text-[10px] mt-0.5" style="color:rgba(64,37,22,0.28);">{{ att.tempo }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Utenti attivi -->
+  <div class="card">
+    <div class="flex items-center justify-between mb-4">
+      <div>
+        <h3 class="text-[13.5px] font-semibold" style="color:#402516;">Utenti Attivi</h3>
+        <p class="text-[11px] mt-0.5" style="color:#6b3318;">Ultimi accessi al sistema</p>
+      </div>
+      <a routerLink="/utenti" class="text-[12px] font-semibold cursor-pointer transition-colors"
+         style="color:#0554F2;"
+         onmouseenter="this.style.color='#0540F2'"
+         onmouseleave="this.style.color='#0554F2'">Gestisci →</a>
+    </div>
+    <div class="flex items-center gap-2 flex-wrap">
+      <ng-container *ngIf="loadingUtenti">
+        <div *ngFor="let i of [1,2,3,4,5]" class="flex items-center gap-2.5 px-3 py-2 rounded-xl"
+             style="border:1px solid rgba(64,37,22,0.07);">
+          <div class="skel w-6 h-6 rounded-full"></div>
+          <div><div class="skel h-3 w-20 rounded mb-1"></div><div class="skel h-2 w-14 rounded"></div></div>
+        </div>
+      </ng-container>
+      <div *ngFor="let u of utentiRecenti; let i = index"
+           class="flex items-center gap-2.5 px-3 py-2 rounded-xl cursor-pointer transition-all"
+           style="border:1px solid rgba(64,37,22,0.07);"
+           onmouseenter="this.style.background='rgba(5,84,242,0.05)'; this.style.borderColor='rgba(5,84,242,0.2)'"
+           onmouseleave="this.style.background=''; this.style.borderColor='rgba(64,37,22,0.07)'">
+        <div class="w-6 h-6 rounded-full text-[9px] font-bold flex items-center justify-center"
+             [style.background]="getAvatarBg(i)"
+             [style.color]="getAvatarText(i)"
+             [style.borderColor]="getAvatarBdr(i)"
+             style="border-width:1px; border-style:solid;">{{ u.avatar }}</div>
+        <div>
+          <p class="text-[12px] font-medium" style="color:#402516;">{{ u.nome }} {{ u.cognome }}</p>
+          <p class="text-[10px]" style="color:#6b3318;">{{ u.dipartimento }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
